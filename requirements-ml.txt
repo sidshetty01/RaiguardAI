@@ -1,0 +1,7 @@
+# Training scripts in ml/ (YOLOv8 fine-tuning + classifier benchmark)
+-r requirements.txt
+torch>=2.2
+torchvision>=0.17
+scikit-learn>=1.4
+xgboost>=2.0
+pandas>=2.2

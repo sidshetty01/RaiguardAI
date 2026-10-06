@@ -1,0 +1,22 @@
+# RailGuard hazard detection dataset (YOLO format)
+# datasets/railguard_det/{images,labels}/{train,val,test}/
+path: ../datasets/railguard_det
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: elephant
+  1: cattle
+  2: deer
+  3: wild_boar
+  4: bear
+  5: dog
+  6: person
+  7: vehicle
+  8: motorcycle
+  9: fallen_tree
+  10: boulder
+  11: rock
+  12: landslide_debris
+  13: fire_smoke

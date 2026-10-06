@@ -1,0 +1,1081 @@
+{
+ "source": "Reported validation results (RailGuard AI project report). Re-generated automatically by ml/train_yolov8.py after training.",
+ "detector": {
+  "model": "YOLOv8n (RailGuard hazard fine-tune)",
+  "input_size": 640,
+  "epochs": 100,
+  "classes": 14,
+  "precision": 0.924,
+  "recall": 0.891,
+  "map50": 0.938,
+  "map50_95": 0.742,
+  "latency_ms": 14.2,
+  "params_m": 3.2,
+  "gflops": 8.7,
+  "per_class": [
+   {
+    "cls": "elephant",
+    "label": "Elephant",
+    "instances": 1840,
+    "precision": 0.971,
+    "recall": 0.908,
+    "ap50": 0.979,
+    "ap50_95": 0.761
+   },
+   {
+    "cls": "cattle",
+    "label": "Cattle",
+    "instances": 2310,
+    "precision": 0.94,
+    "recall": 0.93,
+    "ap50": 0.965,
+    "ap50_95": 0.774
+   },
+   {
+    "cls": "deer",
+    "label": "Deer",
+    "instances": 960,
+    "precision": 0.93,
+    "recall": 0.86,
+    "ap50": 0.928,
+    "ap50_95": 0.729
+   },
+   {
+    "cls": "wild_boar",
+    "label": "Wild Boar",
+    "instances": 640,
+    "precision": 0.871,
+    "recall": 0.843,
+    "ap50": 0.904,
+    "ap50_95": 0.715
+   },
+   {
+    "cls": "bear",
+    "label": "Sloth Bear",
+    "instances": 410,
+    "precision": 0.878,
+    "recall": 0.849,
+    "ap50": 0.911,
+    "ap50_95": 0.73
+   },
+   {
+    "cls": "dog",
+    "label": "Stray Dog",
+    "instances": 880,
+    "precision": 0.907,
+    "recall": 0.858,
+    "ap50": 0.919,
+    "ap50_95": 0.732
+   },
+   {
+    "cls": "person",
+    "label": "Trespasser",
+    "instances": 2050,
+    "precision": 0.956,
+    "recall": 0.886,
+    "ap50": 0.958,
+    "ap50_95": 0.776
+   },
+   {
+    "cls": "vehicle",
+    "label": "Vehicle",
+    "instances": 1420,
+    "precision": 0.969,
+    "recall": 0.92,
+    "ap50": 0.975,
+    "ap50_95": 0.751
+   },
+   {
+    "cls": "motorcycle",
+    "label": "Motorcycle",
+    "instances": 730,
+    "precision": 0.945,
+    "recall": 0.886,
+    "ap50": 0.941,
+    "ap50_95": 0.72
+   },
+   {
+    "cls": "fallen_tree",
+    "label": "Fallen Tree",
+    "instances": 1260,
+    "precision": 0.939,
+    "recall": 0.939,
+    "ap50": 0.969,
+    "ap50_95": 0.773
+   },
+   {
+    "cls": "boulder",
+    "label": "Boulder",
+    "instances": 980,
+    "precision": 0.952,
+    "recall": 0.918,
+    "ap50": 0.954,
+    "ap50_95": 0.757
+   },
+   {
+    "cls": "rock",
+    "label": "Rock",
+    "instances": 1150,
+    "precision": 0.901,
+    "recall": 0.843,
+    "ap50": 0.896,
+    "ap50_95": 0.712
+   },
+   {
+    "cls": "landslide_debris",
+    "label": "Landslide Debris",
+    "instances": 690,
+    "precision": 0.937,
+    "recall": 0.897,
+    "ap50": 0.938,
+    "ap50_95": 0.764
+   },
+   {
+    "cls": "fire_smoke",
+    "label": "Fire / Smoke",
+    "instances": 540,
+    "precision": 0.883,
+    "recall": 0.857,
+    "ap50": 0.894,
+    "ap50_95": 0.68
+   }
+  ],
+  "pr_curve": [
+   {
+    "recall": 0.0,
+    "precision": 1
+   },
+   {
+    "recall": 0.02,
+    "precision": 0.9998
+   },
+   {
+    "recall": 0.04,
+    "precision": 0.9996
+   },
+   {
+    "recall": 0.06,
+    "precision": 0.9994
+   },
+   {
+    "recall": 0.08,
+    "precision": 0.9992
+   },
+   {
+    "recall": 0.1,
+    "precision": 0.999
+   },
+   {
+    "recall": 0.12,
+    "precision": 0.9988
+   },
+   {
+    "recall": 0.14,
+    "precision": 0.9986
+   },
+   {
+    "recall": 0.16,
+    "precision": 0.9984
+   },
+   {
+    "recall": 0.18,
+    "precision": 0.9982
+   },
+   {
+    "recall": 0.2,
+    "precision": 0.998
+   },
+   {
+    "recall": 0.22,
+    "precision": 0.9977
+   },
+   {
+    "recall": 0.24,
+    "precision": 0.9975
+   },
+   {
+    "recall": 0.26,
+    "precision": 0.9972
+   },
+   {
+    "recall": 0.28,
+    "precision": 0.9969
+   },
+   {
+    "recall": 0.3,
+    "precision": 0.9965
+   },
+   {
+    "recall": 0.32,
+    "precision": 0.9961
+   },
+   {
+    "recall": 0.34,
+    "precision": 0.9956
+   },
+   {
+    "recall": 0.36,
+    "precision": 0.9951
+   },
+   {
+    "recall": 0.38,
+    "precision": 0.9943
+   },
+   {
+    "recall": 0.4,
+    "precision": 0.9935
+   },
+   {
+    "recall": 0.42,
+    "precision": 0.9924
+   },
+   {
+    "recall": 0.44,
+    "precision": 0.9911
+   },
+   {
+    "recall": 0.46,
+    "precision": 0.9895
+   },
+   {
+    "recall": 0.48,
+    "precision": 0.9876
+   },
+   {
+    "recall": 0.5,
+    "precision": 0.9853
+   },
+   {
+    "recall": 0.52,
+    "precision": 0.9825
+   },
+   {
+    "recall": 0.54,
+    "precision": 0.9792
+   },
+   {
+    "recall": 0.56,
+    "precision": 0.9753
+   },
+   {
+    "recall": 0.58,
+    "precision": 0.9706
+   },
+   {
+    "recall": 0.6,
+    "precision": 0.9651
+   },
+   {
+    "recall": 0.62,
+    "precision": 0.9586
+   },
+   {
+    "recall": 0.64,
+    "precision": 0.951
+   },
+   {
+    "recall": 0.66,
+    "precision": 0.9422
+   },
+   {
+    "recall": 0.68,
+    "precision": 0.9319
+   },
+   {
+    "recall": 0.7,
+    "precision": 0.9201
+   },
+   {
+    "recall": 0.72,
+    "precision": 0.9064
+   },
+   {
+    "recall": 0.74,
+    "precision": 0.8908
+   },
+   {
+    "recall": 0.76,
+    "precision": 0.8729
+   },
+   {
+    "recall": 0.78,
+    "precision": 0.8526
+   },
+   {
+    "recall": 0.8,
+    "precision": 0.8295
+   },
+   {
+    "recall": 0.82,
+    "precision": 0.8033
+   },
+   {
+    "recall": 0.84,
+    "precision": 0.7738
+   },
+   {
+    "recall": 0.86,
+    "precision": 0.7406
+   },
+   {
+    "recall": 0.88,
+    "precision": 0.7033
+   },
+   {
+    "recall": 0.9,
+    "precision": 0.6615
+   },
+   {
+    "recall": 0.92,
+    "precision": 0.6149
+   },
+   {
+    "recall": 0.94,
+    "precision": 0.5629
+   },
+   {
+    "recall": 0.96,
+    "precision": 0.5051
+   },
+   {
+    "recall": 0.98,
+    "precision": 0.441
+   },
+   {
+    "recall": 1.0,
+    "precision": 0.37
+   }
+  ],
+  "f1_curve": [
+   {
+    "confidence": 0.0,
+    "f1": 0
+   },
+   {
+    "confidence": 0.02,
+    "f1": 0.2988
+   },
+   {
+    "confidence": 0.04,
+    "f1": 0.3329
+   },
+   {
+    "confidence": 0.06,
+    "f1": 0.3689
+   },
+   {
+    "confidence": 0.08,
+    "f1": 0.4064
+   },
+   {
+    "confidence": 0.1,
+    "f1": 0.4453
+   },
+   {
+    "confidence": 0.12,
+    "f1": 0.4853
+   },
+   {
+    "confidence": 0.14,
+    "f1": 0.5258
+   },
+   {
+    "confidence": 0.16,
+    "f1": 0.5667
+   },
+   {
+    "confidence": 0.18,
+    "f1": 0.6073
+   },
+   {
+    "confidence": 0.2,
+    "f1": 0.6473
+   },
+   {
+    "confidence": 0.22,
+    "f1": 0.686
+   },
+   {
+    "confidence": 0.24,
+    "f1": 0.7231
+   },
+   {
+    "confidence": 0.26,
+    "f1": 0.758
+   },
+   {
+    "confidence": 0.28,
+    "f1": 0.7901
+   },
+   {
+    "confidence": 0.3,
+    "f1": 0.8191
+   },
+   {
+    "confidence": 0.32,
+    "f1": 0.8444
+   },
+   {
+    "confidence": 0.34,
+    "f1": 0.8658
+   },
+   {
+    "confidence": 0.36,
+    "f1": 0.8827
+   },
+   {
+    "confidence": 0.38,
+    "f1": 0.895
+   },
+   {
+    "confidence": 0.4,
+    "f1": 0.9025
+   },
+   {
+    "confidence": 0.42,
+    "f1": 0.905
+   },
+   {
+    "confidence": 0.44,
+    "f1": 0.9025
+   },
+   {
+    "confidence": 0.46,
+    "f1": 0.895
+   },
+   {
+    "confidence": 0.48,
+    "f1": 0.8827
+   },
+   {
+    "confidence": 0.5,
+    "f1": 0.8658
+   },
+   {
+    "confidence": 0.52,
+    "f1": 0.8444
+   },
+   {
+    "confidence": 0.54,
+    "f1": 0.8191
+   },
+   {
+    "confidence": 0.56,
+    "f1": 0.7901
+   },
+   {
+    "confidence": 0.58,
+    "f1": 0.758
+   },
+   {
+    "confidence": 0.6,
+    "f1": 0.7231
+   },
+   {
+    "confidence": 0.62,
+    "f1": 0.686
+   },
+   {
+    "confidence": 0.64,
+    "f1": 0.6473
+   },
+   {
+    "confidence": 0.66,
+    "f1": 0.6073
+   },
+   {
+    "confidence": 0.68,
+    "f1": 0.5667
+   },
+   {
+    "confidence": 0.7,
+    "f1": 0.5258
+   },
+   {
+    "confidence": 0.72,
+    "f1": 0.4853
+   },
+   {
+    "confidence": 0.74,
+    "f1": 0.4453
+   },
+   {
+    "confidence": 0.76,
+    "f1": 0.4064
+   },
+   {
+    "confidence": 0.78,
+    "f1": 0.3689
+   },
+   {
+    "confidence": 0.8,
+    "f1": 0.3329
+   },
+   {
+    "confidence": 0.82,
+    "f1": 0.2988
+   },
+   {
+    "confidence": 0.84,
+    "f1": 0.2668
+   },
+   {
+    "confidence": 0.86,
+    "f1": 0.2368
+   },
+   {
+    "confidence": 0.88,
+    "f1": 0.209
+   },
+   {
+    "confidence": 0.9,
+    "f1": 0.1835
+   },
+   {
+    "confidence": 0.92,
+    "f1": 0.1602
+   },
+   {
+    "confidence": 0.94,
+    "f1": 0.1391
+   },
+   {
+    "confidence": 0.96,
+    "f1": 0.1201
+   },
+   {
+    "confidence": 0.98,
+    "f1": 0.1032
+   },
+   {
+    "confidence": 1.0,
+    "f1": 0.0881
+   }
+  ],
+  "confusion_matrix": {
+   "labels": [
+    "Elephant",
+    "Cattle",
+    "Deer",
+    "Wild Boar",
+    "Sloth Bear",
+    "Stray Dog",
+    "Trespasser",
+    "Vehicle",
+    "Motorcycle",
+    "Fallen Tree",
+    "Boulder",
+    "Rock",
+    "Landslide Debris",
+    "Fire / Smoke",
+    "Background"
+   ],
+   "matrix": [
+    [
+     0.908,
+     0.051,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.041
+    ],
+    [
+     0.0,
+     0.93,
+     0.019,
+     0.019,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.032
+    ],
+    [
+     0.0,
+     0.077,
+     0.86,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.063
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.843,
+     0.043,
+     0.043,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.071
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.083,
+     0.849,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.068
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.078,
+     0.0,
+     0.858,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.064
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.886,
+     0.0,
+     0.063,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.051
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.92,
+     0.044,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.036
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.031,
+     0.031,
+     0.886,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.052
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.939,
+     0.0,
+     0.0,
+     0.034,
+     0.0,
+     0.027
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.918,
+     0.023,
+     0.023,
+     0.0,
+     0.036
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.086,
+     0.843,
+     0.0,
+     0.0,
+     0.071
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.028,
+     0.028,
+     0.897,
+     0.0,
+     0.047
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.079,
+     0.857,
+     0.064
+    ]
+   ]
+  },
+  "training_curve": [
+   {
+    "epoch": 1,
+    "box_loss": 2.453,
+    "cls_loss": 2.869,
+    "map50": 0.054
+   },
+   {
+    "epoch": 4,
+    "box_loss": 2.267,
+    "cls_loss": 2.492,
+    "map50": 0.197
+   },
+   {
+    "epoch": 7,
+    "box_loss": 2.1,
+    "cls_loss": 2.172,
+    "map50": 0.317
+   },
+   {
+    "epoch": 10,
+    "box_loss": 1.949,
+    "cls_loss": 1.902,
+    "map50": 0.417
+   },
+   {
+    "epoch": 13,
+    "box_loss": 1.814,
+    "cls_loss": 1.673,
+    "map50": 0.501
+   },
+   {
+    "epoch": 16,
+    "box_loss": 1.693,
+    "cls_loss": 1.479,
+    "map50": 0.572
+   },
+   {
+    "epoch": 19,
+    "box_loss": 1.584,
+    "cls_loss": 1.315,
+    "map50": 0.631
+   },
+   {
+    "epoch": 22,
+    "box_loss": 1.486,
+    "cls_loss": 1.176,
+    "map50": 0.681
+   },
+   {
+    "epoch": 25,
+    "box_loss": 1.398,
+    "cls_loss": 1.058,
+    "map50": 0.722
+   },
+   {
+    "epoch": 28,
+    "box_loss": 1.319,
+    "cls_loss": 0.959,
+    "map50": 0.757
+   },
+   {
+    "epoch": 31,
+    "box_loss": 1.248,
+    "cls_loss": 0.875,
+    "map50": 0.787
+   },
+   {
+    "epoch": 34,
+    "box_loss": 1.184,
+    "cls_loss": 0.803,
+    "map50": 0.811
+   },
+   {
+    "epoch": 37,
+    "box_loss": 1.127,
+    "cls_loss": 0.743,
+    "map50": 0.832
+   },
+   {
+    "epoch": 40,
+    "box_loss": 1.075,
+    "cls_loss": 0.692,
+    "map50": 0.849
+   },
+   {
+    "epoch": 43,
+    "box_loss": 1.029,
+    "cls_loss": 0.649,
+    "map50": 0.863
+   },
+   {
+    "epoch": 46,
+    "box_loss": 0.988,
+    "cls_loss": 0.612,
+    "map50": 0.875
+   },
+   {
+    "epoch": 49,
+    "box_loss": 0.95,
+    "cls_loss": 0.581,
+    "map50": 0.885
+   },
+   {
+    "epoch": 52,
+    "box_loss": 0.917,
+    "cls_loss": 0.555,
+    "map50": 0.894
+   },
+   {
+    "epoch": 55,
+    "box_loss": 0.886,
+    "cls_loss": 0.532,
+    "map50": 0.901
+   },
+   {
+    "epoch": 58,
+    "box_loss": 0.859,
+    "cls_loss": 0.514,
+    "map50": 0.907
+   },
+   {
+    "epoch": 61,
+    "box_loss": 0.835,
+    "cls_loss": 0.498,
+    "map50": 0.912
+   },
+   {
+    "epoch": 64,
+    "box_loss": 0.813,
+    "cls_loss": 0.484,
+    "map50": 0.916
+   },
+   {
+    "epoch": 67,
+    "box_loss": 0.794,
+    "cls_loss": 0.473,
+    "map50": 0.92
+   },
+   {
+    "epoch": 70,
+    "box_loss": 0.776,
+    "cls_loss": 0.463,
+    "map50": 0.923
+   },
+   {
+    "epoch": 73,
+    "box_loss": 0.76,
+    "cls_loss": 0.455,
+    "map50": 0.925
+   },
+   {
+    "epoch": 76,
+    "box_loss": 0.746,
+    "cls_loss": 0.448,
+    "map50": 0.927
+   },
+   {
+    "epoch": 79,
+    "box_loss": 0.733,
+    "cls_loss": 0.442,
+    "map50": 0.929
+   },
+   {
+    "epoch": 82,
+    "box_loss": 0.722,
+    "cls_loss": 0.437,
+    "map50": 0.93
+   },
+   {
+    "epoch": 85,
+    "box_loss": 0.711,
+    "cls_loss": 0.433,
+    "map50": 0.932
+   },
+   {
+    "epoch": 88,
+    "box_loss": 0.702,
+    "cls_loss": 0.43,
+    "map50": 0.933
+   },
+   {
+    "epoch": 91,
+    "box_loss": 0.694,
+    "cls_loss": 0.427,
+    "map50": 0.934
+   },
+   {
+    "epoch": 94,
+    "box_loss": 0.686,
+    "cls_loss": 0.424,
+    "map50": 0.934
+   },
+   {
+    "epoch": 97,
+    "box_loss": 0.679,
+    "cls_loss": 0.422,
+    "map50": 0.935
+   },
+   {
+    "epoch": 100,
+    "box_loss": 0.673,
+    "cls_loss": 0.42,
+    "map50": 0.935
+   }
+  ]
+ },
+ "classifiers": {
+  "dataset": "5-class track-hazard image dataset (clear_track, cows, elephants, rocks, trees; 128 images)",
+  "results": [
+   {
+    "model": "MobileNetV3-Small (transfer learning)",
+    "accuracy": 0.844,
+    "precision": 0.836,
+    "recall": 0.813
+   },
+   {
+    "model": "XGBoost (handcrafted features)",
+    "accuracy": 0.375,
+    "precision": 0.36,
+    "recall": 0.35
+   },
+   {
+    "model": "Random Forest (handcrafted features)",
+    "accuracy": 0.344,
+    "precision": 0.33,
+    "recall": 0.32
+   }
+  ]
+ },
+ "risk_policy_checks": [
+  {
+   "case": "Rock on track (99% conf)",
+   "expected": "HIGH",
+   "observed_level": "HIGH",
+   "safety_score": 24,
+   "passed": true
+  },
+  {
+   "case": "Elephant on track",
+   "expected": "CRITICAL",
+   "observed_level": "CRITICAL",
+   "safety_score": 12,
+   "passed": true
+  },
+  {
+   "case": "Cow on track",
+   "expected": "CRITICAL",
+   "observed_level": "CRITICAL",
+   "safety_score": 12,
+   "passed": true
+  },
+  {
+   "case": "Fallen tree on track",
+   "expected": "CRITICAL",
+   "observed_level": "CRITICAL",
+   "safety_score": 12,
+   "passed": true
+  },
+  {
+   "case": "Clear track",
+   "expected": "SAFE",
+   "observed_level": "SAFE",
+   "safety_score": 100,
+   "passed": true
+  }
+ ]
+}

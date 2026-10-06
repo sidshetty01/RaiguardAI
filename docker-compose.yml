@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      RAILGUARD_JWT_SECRET: ${RAILGUARD_JWT_SECRET:-change-me-in-production}
+      RAILGUARD_CORS_ORIGINS: http://localhost:3000
+      # RAILGUARD_DATABASE_URL: postgresql+psycopg://railguard:railguard@db:5432/railguard
+    volumes:
+      - railguard-data:/app/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+volumes:
+  railguard-data:

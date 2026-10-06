@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+data/
+datasets/
+runs/
+ml/weights/*.pt
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+.env
+*.pptx
