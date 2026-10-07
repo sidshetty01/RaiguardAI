@@ -12,3 +12,4 @@ frontend/dist/
 *.tsbuildinfo
 .env
 *.pptx
+test_videos/
