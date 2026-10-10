@@ -79,5 +79,5 @@ export default function SceneCanvas({ scene, image, showRoi = true, showVectors 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animate]);
 
-  return <canvas ref={canvasRef} className={className ?? "block h-auto w-full rounded-xl bg-ink-900"} style={{ aspectRatio: scene ? `${scene.camera.width}/${scene.camera.height}` : "16/9" }} />;
+  return <canvas ref={canvasRef} className={className ?? "scene"} style={{ aspectRatio: scene ? `${scene.camera.width}/${scene.camera.height}` : "16/9" }} />;
 }

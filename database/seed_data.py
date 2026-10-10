@@ -30,11 +30,8 @@ from backend.app.vision.motion import Direction, MotionState  # noqa: E402
 from backend.app.vision.risk_engine import RiskEngine, RiskInput  # noqa: E402
 from backend.app.vision.roi import TrackROI, Zone  # noqa: E402
 
-USERS = [
-    ("admin", "admin123", "System Administrator", "ADMIN"),
-    ("operator", "operator123", "Control Room Operator", "OPERATOR"),
-    ("viewer", "viewer123", "Safety Auditor (Read-only)", "VIEWER"),
-]
+# Single-user mode: no login; this account is only used to attribute actions in the audit trail.
+USERS = [("operator", "-", "Control Room Operator", "ADMIN")]
 
 # id, name, from, to, km_start, km_end, terrain, forest, elephant, landslide, (lat1,lng1), (lat2,lng2)
 SECTIONS = [
@@ -307,7 +304,6 @@ def seed(reset: bool = False, days: int = 14, rng_seed: int = 2026) -> None:
             db.merge(AppSetting(key=key, value=val))
         db.commit()
         print(f"Seeded {len(USERS)} users, {len(sections)} sections, {len(cameras)} cameras, {count} historical incidents.")
-        print("Logins: admin/admin123 | operator/operator123 | viewer/viewer123")
 
 
 if __name__ == "__main__":

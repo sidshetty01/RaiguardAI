@@ -11,8 +11,8 @@ from dataclasses import dataclass, field
 from .distance import DistanceEstimator
 from .geometry import CameraModel
 from .hazard_classes import HAZARD_CLASSES
-from .motion import MotionAnalyzer
-from .risk_engine import RiskEngine, RiskInput, risk_level
+from .motion import MotionAnalyzer, MotionState
+from .risk_engine import PERSISTENCE_FULL_S, RiskEngine, RiskInput, risk_level
 from .roi import TrackROI, Zone
 from .tracker import CentroidIoUTracker, Detection, Track
 
@@ -121,6 +121,39 @@ class VisionPipeline:
             persisted_s=tr.age_s,
             motion=ms.to_dict(),
             risk=assessment.to_dict(),
+        )
+
+    def analyze_still(self, detections: list[Detection]) -> FrameAnalysis:
+        """Score a single image. With no temporal context, motion is taken as stationary and
+        persistence is scored at its worst case (full points), as a cautious control room would."""
+        t0 = time.perf_counter()
+        objs: list[AnalyzedObject] = []
+        for i, det in enumerate(detections, start=1):
+            zr = self.roi.classify(det.bbox)
+            depth = self.distance.estimate(det.cls, det.bbox)
+            edge_m = self.distance.px_to_m(zr.edge_distance_px, depth)
+            gx, _gy = TrackROI.ground_point(det.bbox)
+            lateral_m = (gx - self.camera.cx) * depth / self.camera.focal_px
+            ms = MotionState()
+            assessment = self.risk.assess(RiskInput(det.cls, zr.zone, edge_m, det.confidence, 1, PERSISTENCE_FULL_S, ms))
+            risk = assessment.to_dict()
+            for f in risk["contributing_factors"]:
+                if f["factor"] == "Temporal Persistence":
+                    f["description"] = "Single image - no temporal data, worst case assumed" + f["description"].split(")", 1)[-1]
+                elif f["factor"] == "Motion Vector":
+                    f["description"] += " (motion not measurable from a still image)"
+            objs.append(AnalyzedObject(i, det.cls, det.bbox, det.confidence, zr.zone.value, depth, edge_m, lateral_m, 1, 0.0, ms.to_dict(), risk))
+        objs.sort(key=lambda o: o.risk_score, reverse=True)
+        max_risk = objs[0].risk_score if objs else 0.0
+        return FrameAnalysis(
+            ts=time.time(),
+            frame_no=1,
+            objects=objs,
+            lost_track_ids=[],
+            latency_ms=(time.perf_counter() - t0) * 1000,
+            max_risk=max_risk,
+            safety_score=round(100 - max_risk, 1),
+            level=risk_level(max_risk),
         )
 
     def process(self, detections: list[Detection], ts: float) -> FrameAnalysis:

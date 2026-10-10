@@ -5,9 +5,8 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, WebSocket, WebSocketDisconnect
 
-from ..auth import get_current_user, require_operator, user_from_token
+from ..auth import get_current_user, require_operator
 from ..config import settings
-from ..database import SessionLocal
 from ..models import User
 from ..schemas import ScenarioIn
 from ..services.hub import hub
@@ -97,14 +96,6 @@ def stop(runtime_id: str, _: User = Depends(require_operator)):
     return {"ok": True}
 
 
-async def _authorize(ws: WebSocket, token: str | None) -> bool:
-    with SessionLocal() as db:
-        ok = user_from_token(db, token) is not None
-    if not ok:
-        await ws.close(code=4401)
-    return ok
-
-
 async def _pump(ws: WebSocket, channels: list[str]) -> None:
     queues = [(c, hub.subscribe(c)) for c in channels]
     try:
@@ -133,10 +124,8 @@ async def _pump(ws: WebSocket, channels: list[str]) -> None:
 
 
 @router.websocket("/ws/stream/{runtime_id}")
-async def ws_stream(ws: WebSocket, runtime_id: str, token: str | None = None):
+async def ws_stream(ws: WebSocket, runtime_id: str):
     await ws.accept()
-    if not await _authorize(ws, token):
-        return
     rt = stream_manager.runtimes.get(runtime_id)
     if rt and rt.latest:
         await ws.send_json({**rt.latest, "image": None})
@@ -144,8 +133,6 @@ async def ws_stream(ws: WebSocket, runtime_id: str, token: str | None = None):
 
 
 @router.websocket("/ws/events")
-async def ws_events(ws: WebSocket, token: str | None = None):
+async def ws_events(ws: WebSocket):
     await ws.accept()
-    if not await _authorize(ws, token):
-        return
     await _pump(ws, ["alerts", "events", "telemetry"])

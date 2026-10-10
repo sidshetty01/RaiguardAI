@@ -23,7 +23,8 @@ These simple setups suffer from high false-positive rates for harmless distant o
 3. **Early Warning Threat Prediction** - least-squares closing speed toward the track gives the predicted entry time (`Predicted entry in 6.4s`) and a `PREDICTED THREAT` alert *before* the hazard breaches the track.
 4. **False-positive suppression** - severity, persistence and confidence are scaled by zone exposure, so a cow grazing 25 m away stays SAFE while the same cow on the ballast is CRITICAL; birds are suppressed outright.
 5. **Section Safety Health Score (0–100)** - explainable, capped penalties for hazard density, critical incidents, forest proximity, response time, unresolved hazards and terrain.
-6. **Control Room Dashboard** - 16 dark glassmorphism pages: live canvas with ROI overlays, incidents, alert drawer with audible chimes, Leaflet map, 12 analytics charts, heatmap, PDF reports and diagnostics.
+6. **Simple Web Dashboard** - a plain, single-user web app (no login): Image Check, Live Monitoring, Incidents, Alerts and PDF Reports.
+8. **Image Risk Check** - upload a single photo and get the same detection, danger-zone and explainable risk analysis used for video.
 7. **Zero-Hardware Demo Simulation Mode** - scripted hazards move in world coordinates and are projected through the same pinhole camera model, then emitted as noisy detector output (jitter, misses, range-dependent confidence), so the tracker, distance, motion and risk stages run exactly as on real YOLO output.
 
 ---
@@ -47,15 +48,15 @@ These simple setups suffer from high false-positive rates for harmless distant o
       [ FastAPI REST + WebSocket ] ◄────► [ SQLite (default) / PostgreSQL ]
                 │                         services/stream_manager.py, pdf_report.py, health_score.py
                 ▼
-    [ React + TypeScript Control Room Dashboard ] (16 pages)   frontend/src/
+    [ React + TypeScript Dashboard ] (single user, no login)   frontend/src/
 ```
 
 ---
 
 ## 🛠️ 4. Technology Stack
 
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Recharts, Leaflet (react-leaflet), Canvas renderer, Axios.
-- **Backend**: Python 3.11+ (tested on 3.14), FastAPI, Uvicorn, SQLAlchemy 2, Pydantic v2, PyJWT + bcrypt, ReportLab, WebSockets.
+- **Frontend**: React 18, TypeScript, Vite, plain CSS, Canvas renderer, Axios.
+- **Backend**: Python 3.11+ (tested on 3.14), FastAPI, Uvicorn, SQLAlchemy 2, Pydantic v2, ReportLab, WebSockets.
 - **AI / Vision**: Ultralytics YOLOv8, PyTorch, OpenCV, NumPy; training scripts use scikit-learn, XGBoost, torchvision.
 - **DevOps**: Docker, Docker Compose, Nginx.
 
@@ -126,21 +127,17 @@ npm run dev        # http://localhost:3000  (proxies /api and /ws to :8000)
 ```
 `npm run build` produces `frontend/dist`; the FastAPI server then also serves the dashboard itself at `http://127.0.0.1:8000`, so one process is enough for a demo.
 
-### Demo logins
-| Role | Username / password | Can |
-|---|---|---|
-| Admin | `admin` / `admin123` | everything, incl. engine settings |
-| Operator | `operator` / `operator123` | acknowledge, sign off, generate reports, trigger scenarios, upload video |
-| Viewer | `viewer` / `viewer123` | read-only |
+There is no login - the app opens straight to the home page (single-user mode).
 
 ### Demo tips
-- **Live Monitoring → Demo Scenario Control** triggers any of 13 scripted hazards (elephant herd crossing, cattle on track, fallen tree, rockfall, landslide, trespasser, level-crossing vehicle, deer dash, wild boar, sloth bear, flood water, forest fire, distant harmless activity) on the selected camera.
+- **Image Check** - upload any track photo; you get each detected object, its zone, distance and risk score with a factor-by-factor explanation. (A still image has no motion history, so motion counts as stationary and persistence is scored at its worst case.)
+- **Live → Run scenario** triggers any of 13 scripted hazards (elephant herd crossing, cattle on track, fallen tree, rockfall, landslide, trespasser, level-crossing vehicle, deer dash, wild boar, sloth bear, flood water, forest fire, distant harmless activity) on the selected camera.
 - **Upload video** runs real YOLOv8 (COCO weights map elephant/cow/person/car/… onto the hazard taxonomy; put custom weights in `ml/weights/` and set `RAILGUARD_YOLO_WEIGHTS`).
-- **Settings** → scenario frequency `HIGH` for a busy live demo, `LOW` for a quiet control room.
+- Scenario frequency can be changed with `PUT /api/settings` (`scenario_frequency`: `LOW` / `NORMAL` / `HIGH`) from the API docs page.
 
 ### Tests
 ```bash
-python -m pytest backend/tests -q      # vision stages, risk policy, alert escalation, API workflow, PDF
+python -m pytest backend/tests -q      # vision stages, risk policy, alert escalation, API workflow, image check, PDF
 ```
 
 ---
@@ -152,13 +149,12 @@ docker compose up --build
 # dashboard  -> http://localhost:3000   (nginx, proxies /api and /ws)
 # API / docs -> http://localhost:8000/docs
 ```
-Set `RAILGUARD_JWT_SECRET` in the environment for anything beyond a local demo. To use PostgreSQL, set `RAILGUARD_DATABASE_URL` (and add `psycopg[binary]` to the requirements).
+There is no authentication (single-user mode), so only expose it on a trusted network. To use PostgreSQL, set `RAILGUARD_DATABASE_URL` (and add `psycopg[binary]` to the requirements).
 
 ### Configuration (environment variables)
 | Variable | Default | Purpose |
 |---|---|---|
 | `RAILGUARD_DATABASE_URL` | `sqlite:///data/railguard.db` | SQLAlchemy URL |
-| `RAILGUARD_JWT_SECRET` | dev secret | token signing key |
 | `RAILGUARD_YOLO_WEIGHTS` | `yolov8n.pt` | detector weights (searched in repo root and `ml/weights/`) |
 | `RAILGUARD_YOLO_CONFIDENCE` | `0.35` | detection threshold |
 | `RAILGUARD_SIMULATION_FPS` | `10` | synthetic stream rate |
@@ -166,24 +162,16 @@ Set `RAILGUARD_JWT_SECRET` in the environment for anything beyond a local demo. 
 
 ---
 
-## 📄 8. The 16 UI Pages
+## 📄 8. Frontend Pages
 
-1. **Login** - role-based authentication (Admin / Operator / Viewer).
-2. **Control Dashboard** - KPI cards, live canvas preview (follows the riskiest camera), network safety index, alert feed, 24-hour risk index, recent incidents.
-3. **Live Monitoring** - stream selector, video upload, ROI / vector / label toggles, live boxes with distance, motion vectors and ETA badges, per-object XAI, scenario control.
-4. **Camera Network Manager** - 8 trackside cameras with ONLINE / MAINTENANCE / OFFLINE status, FPS, latency, temperature, uptime.
-5. **Incidents Database** - search, filters, sorting, pagination, inline status changes, CSV export.
-6. **Incident Detail** - evidence snapshot at peak risk, XAI breakdown, spatial-temporal analysis, escalation timeline, operator notes & sign-off, PDF trigger.
-7. **Alerts & Escalation** - notification centre, severity filters, audible chimes, escalation ladder.
-8. **Geographical Railway Map** - Leaflet map of the Hassan–Mangaluru ghat line and Konkan sections, coloured by section health, live camera markers, open incidents.
-9. **Hazard Analytics** - 12 interactive Recharts charts.
-10. **Safety Heatmap** - geographic density, section × hour matrix, section × hazard-class matrix.
-11. **Section Health Score** - 0–100 index per section with explainable penalty breakdown and weekly trend.
-12. **Model Performance** - Precision, Recall, mAP@50, mAP@50-95, latency, PR and F1 curves, confusion matrix, per-class AP, training curves, classifier comparison, live policy checks.
-13. **Dataset Management** - class distribution, splits, augmentations; counts `datasets/hazard_cls/` automatically when present.
-14. **PDF Reports Center** - incident audit, daily summary and section health reports.
-15. **System Health** - subsystem diagnostics (API, DB, reasoning engine, YOLO detector, feeds, alerts, storage) and audit trail.
-16. **Settings & Academic Scope** - engine settings plus problem statement, objectives, methodology, XAI formulation, literature survey, team and future scope.
+1. **Home** - minimal landing page with links.
+2. **Image Check** - drop in a photo; hazards are boxed on the image with the track danger zones, an overall risk level and safety score, and a per-object explainable breakdown.
+3. **Live** - simulated trackside cameras or an uploaded video analysed with YOLOv8, with scenario triggers and per-object risk breakdown.
+4. **Incidents** - filterable incident list and a detail page with the evidence snapshot, risk breakdown, alert timeline, notes, resolve / false-alarm and PDF download.
+5. **Alerts** - unacknowledged alerts with acknowledge / acknowledge-all.
+6. **Reports** - generate and download daily-summary and section-health PDFs.
+
+The backend still exposes analytics, map, heatmap, section-health, model-performance, dataset and system-health data through the REST API (see `/docs`).
 
 > **About the model metrics:** the detector figures (P 92.4%, R 89.1%, mAP@50 93.8%, mAP@50-95 74.2%, 14.2 ms) and classifier results (MobileNetV3 84.4% vs XGBoost 37.5% / RF 34.4%) are the values reported in the project presentation, stored in `ml/metrics/model_metrics.json`. Running `ml/train_yolov8.py` / `ml/train_classifiers.py` on your dataset overwrites them with freshly measured numbers.
 
@@ -206,14 +194,14 @@ backend/app/
   main.py            FastAPI app, lifespan (seed, engine start), SPA hosting
   config.py          environment-driven settings
   models.py          SQLAlchemy models (users, sections, cameras, incidents, alerts, reports, settings, audit)
-  auth.py            JWT + bcrypt, role guards, audit helper
-  routers/           auth, cameras, incidents, alerts, analytics (dashboard/map/heatmap/health), stream (REST + WS), system
+  auth.py            single-user mode (no login) + audit helper
+  routers/           analyze (image check), cameras, incidents, alerts, analytics, stream (REST + WS), system
   services/          stream_manager (live loops, incident recorder), pdf_report, health_score, hub (pub/sub)
   vision/            the 7-stage reasoning engine + simulator
 backend/tests/       pytest suite
 database/seed_data.py
 ml/                  training scripts, data.yaml, metrics/, weights/
-frontend/src/        pages/ (16), components/, context/, hooks/, lib/ (scene renderer, formatting, sound)
+frontend/src/        pages/ (Home, ImageCheck, Live, Incidents, IncidentDetail, Alerts, Reports), components/, hooks/, lib/
 docker-compose.yml, Dockerfile.backend, frontend/Dockerfile, frontend/nginx.conf
 ```
 

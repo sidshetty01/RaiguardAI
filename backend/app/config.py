@@ -24,9 +24,6 @@ class Settings:
     tagline: str = "See the Risk. Predict the Threat. Protect the Track."
 
     database_url: str = field(default_factory=lambda: _env("DATABASE_URL", f"sqlite:///{(DATA_DIR / 'railguard.db').as_posix()}"))
-    jwt_secret: str = field(default_factory=lambda: _env("JWT_SECRET", "railguard-dev-secret-change-me-in-production"))
-    jwt_algorithm: str = "HS256"
-    jwt_expiry_minutes: int = field(default_factory=lambda: int(_env("JWT_EXPIRY_MINUTES", "720")))
 
     cors_origins: tuple[str, ...] = field(
         default_factory=lambda: tuple(_env("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173").split(","))

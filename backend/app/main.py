@@ -17,7 +17,7 @@ from sqlalchemy import func, select
 from .config import ROOT_DIR, settings
 from .database import SessionLocal, init_db
 from .models import User
-from .routers import alerts, analytics, auth, cameras, incidents, stream, system
+from .routers import alerts, analytics, analyze, auth, cameras, incidents, stream, system
 from .services.hub import hub
 from .services.stream_manager import stream_manager
 
@@ -57,7 +57,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (auth.router, analytics.router, cameras.router, incidents.router, alerts.router, stream.router, system.router):
+for r in (auth.router, analyze.router, analytics.router, cameras.router, incidents.router, alerts.router, stream.router, system.router):
     app.include_router(r)
 
 

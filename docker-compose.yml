@@ -4,7 +4,6 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     environment:
-      RAILGUARD_JWT_SECRET: ${RAILGUARD_JWT_SECRET:-change-me-in-production}
       RAILGUARD_CORS_ORIGINS: http://localhost:3000
       # RAILGUARD_DATABASE_URL: postgresql+psycopg://railguard:railguard@db:5432/railguard
     volumes:
