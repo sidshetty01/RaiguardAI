@@ -207,6 +207,36 @@ docker-compose.yml, Dockerfile.backend, frontend/Dockerfile, frontend/nginx.conf
 
 ---
 
+## 🧭 Scene Hazard Model (derailment obstructions)
+
+Stock YOLOv8 weights only know everyday objects (people, animals, vehicles). Rocks, boulders, landslides, fallen trees, flood water and track damage are not in that vocabulary, so on their own they produce no detections. RailGuard therefore runs a second model alongside YOLOv8:
+
+- **CLIP zero-shot scene model** (`backend/app/vision/scene_hazards.py`) scores the whole frame plus a 3x3 grid of tiles against plain-English descriptions - *"large rocks and boulders lying on a railway track"*, *"a landslide covering the railway track"*, *"a fallen tree lying across a railway track"*, *"a broken or damaged railway track"*, *"a clear railway track"* and so on.
+- Obstructions it finds are added as **on-track** detections (the descriptions are about the hazard *on* the track), so they score HIGH/CRITICAL through the same explainable risk engine; the hottest tiles give the bounding box.
+- For animals, people and vehicles it decides **on the rails vs beside the track**, confirming the YOLOv8 boxes (or adding a generic object when YOLO missed it).
+- It runs on Image Check (every photo) and on uploaded videos (about once per second of video).
+
+### Track localisation - where exactly is the object?
+
+Before deciding "on the track", RailGuard locates the actual rails (`backend/app/vision/track_segmentation.py`):
+
+1. **Segment the rails** with a Mask2Former model fine-tuned on RailSem19 (rail and in-track pixels).
+2. **Separate the tracks** by following each track's cross-section row by row and fitting its left/right edges (occlusion-aware, so an animal hiding part of a track doesn't break it).
+3. **Place each object by its feet** using the rail gauge (1.676 m) as a ruler: **CRITICAL** = feet on the track, **WARNING** = within the train's swept envelope + 1.5 m, **SAFE** = further away - with the measured distance in metres.
+4. **Credibility checks**: a track only decides an object's position if it is visible at the object's depth *and* its scale matches the object's known height. Otherwise rails visible between the object's legs, then the scene model's on/beside verdict, then the fixed zone are used. Every result states which evidence decided the position.
+
+Example: a cow standing on the ballast **between** two station tracks is reported as WARNING ("0.2 m from track edge - measured against the located track"), not CRITICAL.
+
+**Evaluation** on a 90-image set of real track photos (73 hazards on the track - rocks, landslides, fallen trees, elephants, cattle, carcass; 1 animal beside the track; 16 clear tracks incl. brightness/contrast/flip variants): **72/73 on-track hazards flagged HIGH/CRITICAL**, the beside-track animals correctly given a warning, **0/16 false alarms** on clear tracks. Reproduce with:
+
+```bash
+python ml/evaluate_images.py "path/to/images" --labels ml/labels_test_rai.csv
+```
+
+Model choice: `RAILGUARD_SCENE_MODEL=ViT-B/32` (default, ~0.6 s/image on CPU) or `ViT-L/14` (more accurate, much slower). For production accuracy, fine-tune YOLOv8 on a labelled railway-obstacle dataset with `ml/train_yolov8.py`.
+
+---
+
 ## 🔮 11. Future Extensions
 
 - **Locomotive Edge AI**: Jetson Orin Nano deployment directly on locomotive cabs.

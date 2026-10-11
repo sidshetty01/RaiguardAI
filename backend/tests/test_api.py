@@ -86,3 +86,24 @@ def test_analyze_image_blank_track_is_safe(client):
         pytest.skip(r.json()["detail"])
     body = r.json()
     assert r.status_code == 200 and body["level"] == "SAFE" and body["safety_score"] == 100
+
+
+def test_scene_model_flags_fallen_tree_photo():
+    """Real-photo check: a fallen tree across the line must not come back as safe."""
+    from pathlib import Path
+
+    photo = Path(__file__).resolve().parents[2] / "test_images" / "fallen_trees_line.jpg"
+    if not photo.exists():
+        pytest.skip("test_images/ not present")
+    pytest.importorskip("clip")
+    r = client_post_image(photo)
+    if r.status_code == 503:
+        pytest.skip(r.json()["detail"])
+    body = r.json()
+    assert body["level"] in ("HIGH", "CRITICAL"), body["scene"]
+    assert any(o["source"] == "Scene model" for o in body["objects"])
+
+
+def client_post_image(path):
+    with TestClient(app) as c:
+        return c.post("/api/analyze/image", files={"file": (path.name, path.read_bytes(), "image/jpeg")})

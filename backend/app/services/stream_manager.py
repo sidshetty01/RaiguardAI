@@ -30,6 +30,9 @@ from ..vision.detector import get_detector
 from ..vision.geometry import CameraModel
 from ..vision.hazard_classes import HAZARD_CLASSES
 from ..vision.pipeline import FrameAnalysis, VisionPipeline
+from ..vision.scene_hazards import get_scene_model, merge_detections
+from ..vision.track_segmentation import get_track_segmenter
+from ..vision.tracker import Detection
 from ..vision.simulator import SCENARIO_KEYS, SceneSimulator
 from .hub import hub
 from .serializers import iso
@@ -279,6 +282,15 @@ class StreamManager:
         src_fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
         total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
         stride = max(1, math.ceil(src_fps / settings.video_max_fps))
+        scene = get_scene_model()
+        scene_ok = scene.load()
+        scene_hazards: list = []
+        last_scene = -1e9
+        segmenter = get_track_segmenter()
+        seg_ok = segmenter.load()
+        default_roi = rt.pipeline.roi
+        tracks_located = False
+        last_track = -1e9
         idx = 0
         t_start = time.time()
         base_ts = time.time()
@@ -308,6 +320,26 @@ class StreamManager:
                 video_ts = base_ts + idx / src_fps  # motion uses media time, not wall time
                 t0 = time.perf_counter()
                 dets = det.detect(frame)
+                # scene hazards (trees, rocks, landslides...) are re-checked about once a second of
+                # video and carried between checks so the tracker sees a steady obstruction
+                if scene_ok and video_ts - last_scene >= settings.scene_every_s:
+                    last_scene = video_ts
+                    try:
+                        scene_hazards, _ = scene.analyze(frame)
+                    except Exception:
+                        log.exception("scene hazard check failed")
+                        scene_hazards = []
+                # the camera is fixed, so the tracks are re-located only every few seconds
+                if seg_ok and video_ts - last_track >= settings.track_every_s:
+                    last_track = video_ts
+                    try:
+                        tm = segmenter.track_map(frame, [d.bbox for d in dets], fallback=default_roi)
+                    except Exception:
+                        log.exception("track segmentation failed")
+                        tm = None
+                    rt.pipeline.roi = tm or default_roi
+                    tracks_located = tm is not None
+                dets = merge_detections(dets, scene_hazards, tracks_located=tracks_located, track_map=rt.pipeline.roi if tracks_located else None)
                 fa = rt.pipeline.process(dets, video_ts)
                 fa.latency_ms = (time.perf_counter() - t0) * 1000  # detection + reasoning
                 if total:

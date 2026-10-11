@@ -197,22 +197,36 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath();
 }
 
+function drawZones(ctx: CanvasRenderingContext2D, warning: [number, number][], critical: [number, number][]) {
+  if (warning.length > 2) {
+    polygon(ctx, warning);
+    ctx.fillStyle = "rgba(250,204,21,0.10)";
+    ctx.fill();
+    ctx.setLineDash([10, 8]);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(250,204,21,0.8)";
+    ctx.stroke();
+  }
+  if (critical.length > 2) {
+    polygon(ctx, critical);
+    ctx.fillStyle = "rgba(239,68,68,0.16)";
+    ctx.fill();
+    ctx.setLineDash([]);
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "rgba(239,68,68,0.9)";
+    ctx.stroke();
+  }
+}
+
 function drawRoi(ctx: CanvasRenderingContext2D, roi: Roi) {
   ctx.save();
-  polygon(ctx, roi.warning);
-  ctx.fillStyle = "rgba(250,204,21,0.10)";
-  ctx.fill();
-  ctx.setLineDash([10, 8]);
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "rgba(250,204,21,0.8)";
-  ctx.stroke();
-  polygon(ctx, roi.critical);
-  ctx.fillStyle = "rgba(239,68,68,0.16)";
-  ctx.fill();
-  ctx.setLineDash([]);
-  ctx.lineWidth = 2.5;
-  ctx.strokeStyle = "rgba(239,68,68,0.9)";
-  ctx.stroke();
+  if (roi.tracks?.length) {
+    // located tracks: buffers first so every track's red corridor stays visible on top
+    for (const t of roi.tracks) drawZones(ctx, t.warning, []);
+    for (const t of roi.tracks) drawZones(ctx, [], t.critical);
+  } else {
+    drawZones(ctx, roi.warning, roi.critical);
+  }
   ctx.restore();
 }
 

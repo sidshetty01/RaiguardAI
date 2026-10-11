@@ -32,6 +32,8 @@ WARNING_HALF_WIDTH_M = 7.5
 class ZoneResult:
     zone: Zone
     edge_distance_px: float  # pixel distance from ground point to the critical polygon (0 if inside)
+    edge_m: float | None = None  # metres to the track, when measured directly (track segmentation)
+    basis: str | None = None  # how the position was decided, for the explanation
 
 
 class TrackROI:
@@ -58,7 +60,7 @@ class TrackROI:
         x1, _y1, x2, y2 = bbox
         return ((x1 + x2) / 2, y2)
 
-    def classify(self, bbox: tuple[float, float, float, float]) -> ZoneResult:
+    def classify(self, bbox: tuple[float, float, float, float], cls: str | None = None) -> ZoneResult:
         gp = self.ground_point(bbox)
         x1, y1, x2, y2 = bbox
         # A wide object (fallen tree, debris) obstructs the track if *any* part of its base

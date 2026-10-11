@@ -13,3 +13,8 @@ frontend/dist/
 .env
 *.pptx
 test_videos/
+ml/eval_out/
+test rai/
+test_images/
+weights/
+*.zip

@@ -50,6 +50,7 @@ export interface SceneObject {
   persisted_s: number;
   motion: Motion;
   risk: Risk;
+  source?: string;
 }
 
 export interface CameraGeom {
@@ -63,6 +64,9 @@ export interface CameraGeom {
 export interface Roi {
   critical: [number, number][];
   warning: [number, number][];
+  /** one entry per detected track when the rails were located by segmentation */
+  tracks?: { critical: [number, number][]; warning: [number, number][] }[];
+  source?: string;
 }
 
 export interface Frame {

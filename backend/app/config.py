@@ -33,6 +33,9 @@ class Settings:
     simulation_enabled: bool = field(default_factory=lambda: _env("SIMULATION", "1") == "1")
     simulation_fps: float = field(default_factory=lambda: float(_env("SIMULATION_FPS", "10")))
     yolo_weights: str = field(default_factory=lambda: _env("YOLO_WEIGHTS", "yolov8n.pt"))
+    scene_model: str = field(default_factory=lambda: _env("SCENE_MODEL", "ViT-B/32"))
+    track_every_s: float = field(default_factory=lambda: float(_env("TRACK_EVERY_S", "5.0")))
+    scene_every_s: float = field(default_factory=lambda: float(_env("SCENE_EVERY_S", "1.0")))
     yolo_confidence: float = field(default_factory=lambda: float(_env("YOLO_CONFIDENCE", "0.35")))
     video_max_fps: float = field(default_factory=lambda: float(_env("VIDEO_MAX_FPS", "12")))
 

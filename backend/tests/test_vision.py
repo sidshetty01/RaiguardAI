@@ -132,3 +132,43 @@ def test_all_scenarios_build():
 
     for k in SCENARIO_KEYS:
         assert build_scenario(k, random.Random(1)).actors
+
+
+def test_scene_hazard_on_track_is_critical_even_outside_fixed_zone():
+    """Scene-model hazards are described as lying on the track, so they must not fall back to SAFE
+    just because the photo's rails don't line up with the default danger-zone polygon."""
+    pipe = VisionPipeline(CAM)
+    corner_box = (0.0, 0.0, 200.0, 150.0)  # far outside the fixed track polygon
+    for cls in ("fallen_tree", "landslide_debris", "boulder", "track_damage"):
+        fa = pipe.analyze_still([Detection(cls, corner_box, 0.6, on_track=True, source="Scene model")])
+        obj = fa.objects[0]
+        assert obj.zone == "CRITICAL"
+        assert obj.risk["risk_level"] in ("HIGH", "CRITICAL")
+        assert "scene hazard model" in obj.risk["contributing_factors"][0]["description"]
+    # the same box from the box detector stays outside the corridor
+    fa = pipe.analyze_still([Detection("fallen_tree", corner_box, 0.6)])
+    assert fa.objects[0].zone == "SAFE"
+
+
+def test_track_map_separates_tracks_and_places_objects():
+    """Two perspective tracks with ballast between them: an animal standing between the tracks
+    must not be put on a track; one standing between the rails must."""
+    import cv2
+    import numpy as np
+
+    from backend.app.vision.track_segmentation import TrackMap, tracks_from_mask
+
+    h, w = 400, 600
+    mask = np.zeros((h, w), np.uint8)
+    # left track converges toward (200, 80), right track toward (380, 80)
+    cv2.fillPoly(mask, [np.array([[60, 399], [200, 399], [205, 80], [195, 80]])], 1)
+    cv2.fillPoly(mask, [np.array([[400, 399], [540, 399], [385, 80], [375, 80]])], 1)
+    tracks = tracks_from_mask(mask.astype(bool))
+    assert len(tracks) == 2
+    tm = TrackMap(tracks, w, h)
+    on_track = tm.classify((90, 250, 170, 380))  # feet between the left track's rails
+    between = tm.classify((260, 250, 340, 380))  # feet on the ballast between the two tracks
+    far = tm.classify((0, 0, 30, 40))  # top-left corner, nowhere near the line
+    assert on_track.zone == Zone.CRITICAL
+    assert between.zone != Zone.CRITICAL and between.edge_m > 0
+    assert far.zone == Zone.SAFE

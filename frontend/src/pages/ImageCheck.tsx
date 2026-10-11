@@ -18,6 +18,8 @@ interface Result {
   detect_ms: number;
   reasoning_ms: number;
   detector: string;
+  scene: { key: string; label: string; score: number; hazard: boolean }[];
+  tracks_found: number;
 }
 
 const VERDICT: Record<RiskLevel, string> = {
@@ -149,7 +151,11 @@ export default function ImageCheck() {
                 <label className="check">
                   <input type="checkbox" checked={showRoi} onChange={(e) => setShowRoi(e.target.checked)} /> Track danger zones
                 </label>
-                <span className="small dim">Red = on track · yellow = warning buffer · assumes a camera looking down the track</span>
+                <span className="small dim">
+                  {result?.tracks_found
+                    ? `${result.tracks_found} track${result.tracks_found === 1 ? "" : "s"} located · red = on the rails · yellow = within the train's swept envelope + 1.5 m`
+                    : "No rails located - zones assume a camera looking down the track"}
+                </span>
               </div>
             </div>
 
@@ -193,7 +199,7 @@ export default function ImageCheck() {
                               #{o.track_id} {o.label}
                             </div>
                             <div className="meta">
-                              {titleCase(o.zone)} zone · {o.distance_m.toFixed(0)} m · {Math.round(o.confidence * 100)}% sure
+                              {o.source === "Scene model" ? `On the track · scene model ${Math.round(o.confidence * 100)}%` : `${titleCase(o.zone)} zone · ${o.distance_m.toFixed(0)} m · ${Math.round(o.confidence * 100)}% sure`}
                             </div>
                           </span>
                           <Pill level={o.risk.risk_level} score={o.risk.risk_score} />
@@ -201,6 +207,33 @@ export default function ImageCheck() {
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {result && result.scene?.length > 0 && (
+                <div className="panel">
+                  <div className="panel-title">
+                    <Icon name="layers" /> Scene check
+                    <span className="sub">What the scene model thinks the whole picture shows - catches trees, rocks, landslides, floods and track damage.</span>
+                  </div>
+                  <div className="factors">
+                    {result.scene.map((sc) => {
+                      const c = sc.key === "clear" ? RISK_HEX.SAFE : sc.hazard ? RISK_HEX.CRITICAL : "#64748b";
+                      return (
+                        <div className="factor" key={sc.key}>
+                          <div className="top">
+                            <span className="name" style={{ fontWeight: 500 }}>
+                              {sc.label}
+                            </span>
+                            <span className="pts">{Math.round(sc.score * 100)}%</span>
+                          </div>
+                          <div className="track">
+                            <div className="fill" style={{ width: `${sc.score * 100}%`, background: c, color: c }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>

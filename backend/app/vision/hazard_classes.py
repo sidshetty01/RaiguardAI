@@ -27,6 +27,7 @@ HAZARD_CLASSES: dict[str, HazardClass] = {
         HazardClass("deer", "Deer", 0.65, 1.1, 1.20, "ANIMAL", "🦌"),
         HazardClass("wild_boar", "Wild Boar", 0.60, 0.9, 1.50, "ANIMAL", "🐗"),
         HazardClass("bear", "Sloth Bear", 0.75, 1.2, 1.30, "ANIMAL", "🐻"),
+        HazardClass("animal", "Animal", 0.80, 1.3, 1.40, "ANIMAL", "🐾"),
         HazardClass("dog", "Stray Dog", 0.35, 0.6, 1.40, "ANIMAL", "🐕"),
         HazardClass("person", "Trespasser", 0.85, 1.7, 0.40, "HUMAN", "🚶"),
         HazardClass("vehicle", "Vehicle", 0.90, 1.6, 2.20, "VEHICLE", "🚙"),
@@ -37,12 +38,14 @@ HAZARD_CLASSES: dict[str, HazardClass] = {
         HazardClass("landslide_debris", "Landslide Debris", 0.93, 1.5, 2.60, "OBSTRUCTION", "⛰️"),
         HazardClass("flood_water", "Flood Water", 0.85, 0.3, 4.00, "ENVIRONMENT", "🌊"),
         HazardClass("fire_smoke", "Fire / Smoke", 0.88, 3.0, 1.60, "ENVIRONMENT", "🔥"),
+        HazardClass("track_damage", "Track Damage", 1.00, 0.3, 4.00, "OBSTRUCTION", "⚠️"),
+        HazardClass("debris", "Debris / Obstruction", 0.85, 0.6, 2.00, "OBSTRUCTION", "🚧"),
         HazardClass("bird", "Bird", 0.08, 0.3, 1.60, "BENIGN", "🐦"),
     ]
 }
 
 # Classes that, when lying on the track corridor, never clear by themselves.
-STATIC_OBSTRUCTIONS = {"fallen_tree", "boulder", "rock", "landslide_debris", "flood_water"}
+STATIC_OBSTRUCTIONS = {"fallen_tree", "boulder", "rock", "landslide_debris", "flood_water", "track_damage", "debris"}
 
 # Map raw detector labels (COCO or custom-trained weights) onto the RailGuard taxonomy.
 LABEL_ALIASES: dict[str, str] = {

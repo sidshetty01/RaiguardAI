@@ -22,6 +22,9 @@ class Detection:
     cls: str
     bbox: BBox
     confidence: float
+    # set by the scene hazard model: the hazard was described as lying on the track itself
+    on_track: bool = False
+    source: str = "YOLOv8"
 
 
 @dataclass
@@ -35,6 +38,8 @@ class Track:
     hits: int = 1
     missed: int = 0
     history: deque = field(default_factory=lambda: deque(maxlen=60))  # (ts, cx, cy, bbox)
+    on_track: bool = False
+    source: str = "YOLOv8"
     conf_history: deque = field(default_factory=lambda: deque(maxlen=30))
 
     @property
@@ -107,6 +112,7 @@ class CentroidIoUTracker:
             tr = self.tracks[ti]
             tr.bbox = det.bbox
             tr.confidence = det.confidence
+            tr.on_track, tr.source = det.on_track, det.source
             tr.conf_history.append(det.confidence)
             tr.last_seen = ts
             tr.hits += 1
@@ -117,7 +123,7 @@ class CentroidIoUTracker:
         for di, det in enumerate(detections):
             if di in used_dets:
                 continue
-            tr = Track(self._next_id, det.cls, det.bbox, det.confidence, ts, ts)
+            tr = Track(self._next_id, det.cls, det.bbox, det.confidence, ts, ts, on_track=det.on_track, source=det.source)
             tr.conf_history.append(det.confidence)
             cx, cy = tr.centroid
             tr.history.append((ts, cx, cy, det.bbox))

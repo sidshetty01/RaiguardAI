@@ -13,7 +13,7 @@ from .geometry import CameraModel
 from .hazard_classes import HAZARD_CLASSES
 from .motion import MotionAnalyzer, MotionState
 from .risk_engine import PERSISTENCE_FULL_S, RiskEngine, RiskInput, risk_level
-from .roi import TrackROI, Zone
+from .roi import TrackROI, Zone, ZoneResult
 from .tracker import CentroidIoUTracker, Detection, Track
 
 
@@ -31,6 +31,7 @@ class AnalyzedObject:
     persisted_s: float
     motion: dict
     risk: dict
+    source: str = "YOLOv8"
 
     @property
     def risk_score(self) -> float:
@@ -54,6 +55,7 @@ class AnalyzedObject:
             "persisted_s": round(self.persisted_s, 1),
             "motion": self.motion,
             "risk": self.risk,
+            "source": self.source,
         }
 
 
@@ -85,10 +87,38 @@ class VisionPipeline:
         self.motion.reset()
         self.frame_no = 0
 
+    def _zone(self, bbox, on_track: bool, cls: str | None = None) -> ZoneResult:
+        # scene-model hazards are, by their description, lying on the track itself
+        return ZoneResult(Zone.CRITICAL, 0.0) if on_track else self.roi.classify(bbox, cls)
+
+    @staticmethod
+    def _basis(risk: dict, zr: ZoneResult) -> dict:
+        if zr.basis:
+            for f in risk["contributing_factors"]:
+                if f["factor"] == "Track Proximity":
+                    f["description"] += f" - position: {zr.basis}"
+        return risk
+
+    @staticmethod
+    def _annotate(risk: dict, cls: str, source: str) -> dict:
+        if source == "YOLOv8":
+            return risk
+        label = HAZARD_CLASSES[cls].label
+        for f in risk["contributing_factors"]:
+            if f["factor"] == "Track Proximity" and source == "YOLOv8 + scene":
+                f["description"] = f"{label} on the railway track (detected by YOLOv8, position confirmed by the scene hazard model)"
+            elif f["factor"] == "Track Proximity":
+                f["description"] = f"{label} identified on the railway track by the scene hazard model"
+            elif f["factor"] == "Confidence Rating" and source == "Scene model":
+                f["description"] = f["description"].replace("AI confidence", "Scene model confidence") + (
+                    " (all obstruction descriptions combined)" if HAZARD_CLASSES[cls].category in ("OBSTRUCTION", "ENVIRONMENT") else ""
+                )
+        return risk
+
     def _analyze(self, tr: Track, ts: float) -> AnalyzedObject:
-        zr = self.roi.classify(tr.bbox)
+        zr = self._zone(tr.bbox, tr.on_track, tr.cls)
         depth = self.distance.estimate(tr.cls, tr.bbox)
-        edge_m = self.distance.px_to_m(zr.edge_distance_px, depth)
+        edge_m = zr.edge_m if zr.edge_m is not None else self.distance.px_to_m(zr.edge_distance_px, depth)
         gx, _gy = TrackROI.ground_point(tr.bbox)
         lateral_m = (gx - self.camera.cx) * depth / self.camera.focal_px
         cx, cy = tr.centroid
@@ -120,7 +150,8 @@ class VisionPipeline:
             persisted_frames=tr.hits,
             persisted_s=tr.age_s,
             motion=ms.to_dict(),
-            risk=assessment.to_dict(),
+            risk=self._basis(self._annotate(assessment.to_dict(), tr.cls, tr.source), zr),
+            source=tr.source,
         )
 
     def analyze_still(self, detections: list[Detection]) -> FrameAnalysis:
@@ -129,20 +160,20 @@ class VisionPipeline:
         t0 = time.perf_counter()
         objs: list[AnalyzedObject] = []
         for i, det in enumerate(detections, start=1):
-            zr = self.roi.classify(det.bbox)
+            zr = self._zone(det.bbox, det.on_track, det.cls)
             depth = self.distance.estimate(det.cls, det.bbox)
-            edge_m = self.distance.px_to_m(zr.edge_distance_px, depth)
+            edge_m = zr.edge_m if zr.edge_m is not None else self.distance.px_to_m(zr.edge_distance_px, depth)
             gx, _gy = TrackROI.ground_point(det.bbox)
             lateral_m = (gx - self.camera.cx) * depth / self.camera.focal_px
             ms = MotionState()
             assessment = self.risk.assess(RiskInput(det.cls, zr.zone, edge_m, det.confidence, 1, PERSISTENCE_FULL_S, ms))
-            risk = assessment.to_dict()
+            risk = self._basis(self._annotate(assessment.to_dict(), det.cls, det.source), zr)
             for f in risk["contributing_factors"]:
                 if f["factor"] == "Temporal Persistence":
                     f["description"] = "Single image - no temporal data, worst case assumed" + f["description"].split(")", 1)[-1]
                 elif f["factor"] == "Motion Vector":
                     f["description"] += " (motion not measurable from a still image)"
-            objs.append(AnalyzedObject(i, det.cls, det.bbox, det.confidence, zr.zone.value, depth, edge_m, lateral_m, 1, 0.0, ms.to_dict(), risk))
+            objs.append(AnalyzedObject(i, det.cls, det.bbox, det.confidence, zr.zone.value, depth, edge_m, lateral_m, 1, 0.0, ms.to_dict(), risk, det.source))
         objs.sort(key=lambda o: o.risk_score, reverse=True)
         max_risk = objs[0].risk_score if objs else 0.0
         return FrameAnalysis(

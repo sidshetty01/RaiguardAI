@@ -14,6 +14,11 @@ psutil>=5.9
 # Real YOLOv8 inference on uploaded videos / RTSP cameras (pulls in PyTorch).
 # Comment out for a lightweight simulation-only install.
 ultralytics>=8.2
+# Scene hazard model (CLIP zero-shot) for fallen trees, rocks, landslides, floods, track damage
+clip @ git+https://github.com/ultralytics/CLIP.git
+ftfy>=6.1
+# Track localisation (Mask2Former fine-tuned on RailSem19, downloaded from Hugging Face on first use)
+transformers>=4.40
 
 # Tests
 pytest>=8.0
